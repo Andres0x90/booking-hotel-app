@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url:
+      jdbc:postgresql://172.30.103.28:5432/booking-hotel
+    username:
+      postgres
+    password:
+      123
+    driver-class-name:
+      org.postgresql.Driver
