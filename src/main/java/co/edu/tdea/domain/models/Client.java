@@ -5,17 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.math.BigDecimal;
-import java.util.Date;
+import java.util.List;
 
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class Booking {
-    private String code;
-    private Date startDate;
-    private Date endDate;
-    private Client client;
-    private BigDecimal fee;
+public class Client {
+    private String document;
+    private String firstName;
+    private String lastName;
+    private List<Fine> fines;
 }

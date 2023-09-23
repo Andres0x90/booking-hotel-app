@@ -6,16 +6,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
 @Data
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class Booking {
+public class Fine {
     private String code;
-    private Date startDate;
-    private Date endDate;
-    private Client client;
     private BigDecimal fee;
 }
