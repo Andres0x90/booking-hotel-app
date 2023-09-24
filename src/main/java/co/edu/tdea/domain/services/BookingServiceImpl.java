@@ -50,6 +50,10 @@ public class BookingServiceImpl implements BookingService {
         return Single.just(roomRepository.findById(booking.getRoom().getId())
                 .orElseThrow(() -> new RuntimeException("That room doesnt exist")))
                 .map(room -> booking)
+                .map(booking1 -> {
+                    booking1.calculateFee();
+                    return booking1;
+                })
                 .map(mapper::toData)
                 .map(bookingRepository::save)
                 .map(mapper::toEntity);
