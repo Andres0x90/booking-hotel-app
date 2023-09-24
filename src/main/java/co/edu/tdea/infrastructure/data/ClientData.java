@@ -1,11 +1,9 @@
 package co.edu.tdea.infrastructure.data;
 
 import co.edu.tdea.domain.models.Fine;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,10 +14,13 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder(toBuilder = true)
 public class ClientData {
+    @Id
     private String document;
     private String firstName;
     private String lastName;
-    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "document")
     private List<FineData> fines;
 }

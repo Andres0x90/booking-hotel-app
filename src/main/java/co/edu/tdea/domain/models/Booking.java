@@ -16,6 +16,7 @@ public class Booking {
     private String code;
     private Date startDate;
     private Date endDate;
+    private Room room;
     private Client client;
     private BigDecimal fee;
 }
