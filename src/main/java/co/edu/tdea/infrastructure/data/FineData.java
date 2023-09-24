@@ -1,24 +1,21 @@
 package co.edu.tdea.infrastructure.data;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.Date;
 
-@Table(name = "booking")
+@Table(name = "fine")
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BookingData {
+public class FineData {
     @Id
     private String code;
-    private Date startDate;
-    private Date endDate;
-    @OneToOne(mappedBy = "document", cascade = CascadeType.ALL)
-    private ClientData client;
     private BigDecimal fee;
 }
