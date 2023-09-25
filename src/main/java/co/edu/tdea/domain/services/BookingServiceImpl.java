@@ -3,13 +3,11 @@ package co.edu.tdea.domain.services;
 import co.edu.tdea.domain.dto.Mapper;
 import co.edu.tdea.domain.dto.RoomDTO;
 import co.edu.tdea.domain.models.*;
+import co.edu.tdea.infrastructure.data.BookingData;
 import co.edu.tdea.infrastructure.data.FineData;
 import co.edu.tdea.infrastructure.repositories.BookingRepository;
 import co.edu.tdea.infrastructure.repositories.RoomRepository;
-import io.reactivex.rxjava3.core.Completable;
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.core.Maybe;
-import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +17,10 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -89,4 +91,27 @@ public class BookingServiceImpl implements BookingService {
         return Flowable.fromIterable(bookingRepository.findAllByRoomId(roomId))
                 .map(mapper::toEntity);
     }
+
+    @Override
+    public  Flowable<RoomDTO> getAvailableByType(String type){
+         return Flowable.fromIterable(bookingRepository.findAllByRoomType(Types.valueOf(type)))
+                .filter(bookingData -> bookingData.getEndDate().after(new Date()))
+                .map(BookingData::getRoom)
+                .collect(Collectors.toList())
+                .zipWith(Single.just(roomRepository.findAllByType(Types.valueOf(type))), (busyRooms, allRooms) -> {
+                    return allRooms.stream()
+                            .filter(room -> !busyRooms
+                                    .stream()
+                                    .map(Room::getId)
+                                    .toList()
+                                    .contains(room.getId()))
+                            .toList();
+                }).flatMapPublisher(Flowable::fromIterable)
+                 .map(room -> RoomDTO.builder()
+                         .id(room.getId())
+                         .type(room.getType().name())
+                         .build());
+
+    }
+
 }
