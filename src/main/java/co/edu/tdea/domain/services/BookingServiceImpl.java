@@ -6,10 +6,7 @@ import co.edu.tdea.domain.models.*;
 import co.edu.tdea.infrastructure.data.FineData;
 import co.edu.tdea.infrastructure.repositories.BookingRepository;
 import co.edu.tdea.infrastructure.repositories.RoomRepository;
-import io.reactivex.rxjava3.core.Completable;
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.core.Maybe;
-import io.reactivex.rxjava3.core.Single;
+import io.reactivex.rxjava3.core.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +16,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -89,4 +88,38 @@ public class BookingServiceImpl implements BookingService {
         return Flowable.fromIterable(bookingRepository.findByRoomId(roomId))
                 .map(mapper::toEntity);
     }
+
+    @Override
+    public  ArrayList getAvailableByType(Types type, Date initDate, Date endDate){
+        ArrayList available = new ArrayList();
+        int pos = -1;
+        if(type.name().equalsIgnoreCase("EXECUTIVE")){
+            pos = 0;
+        }
+        if(type.name().equalsIgnoreCase("SUITE")){
+            pos = 1;
+        }
+        if(type.name().equalsIgnoreCase("SIMPLE")){
+            pos = 2;
+        }
+        Observable.just(bookingRepository.findAvailable(pos))
+                .map(booked -> {
+
+                    System.out.println("HERE:"+booked.toString());
+                    booked.forEach(ele ->{
+                        System.out.println(ele.getStartDate().toString()+"-"+ele.getEndDate().toString() );
+
+                        if(new Date().after(ele.getEndDate())){
+                            available.add(ele.getRoom());
+                        }
+                    });
+                    return "ok";
+                })
+                .flatMapCompletable(booked -> Completable.complete());
+
+        return available;
+
+    }
+
+
 }

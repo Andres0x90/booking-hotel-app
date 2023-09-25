@@ -1,5 +1,6 @@
 package co.edu.tdea.api.controllers;
 
+import co.edu.tdea.domain.dto.AvailableDTO;
 import co.edu.tdea.domain.dto.RoomDTO;
 import co.edu.tdea.domain.models.Booking;
 import co.edu.tdea.domain.models.Types;
@@ -11,6 +12,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Map;
 
 @RestController
 @Getter
@@ -58,5 +66,18 @@ public class BookingController {
     @GetMapping("/room/history/{roomId}")
     public Flowable<Booking> getHistory(@PathVariable String roomId){
         return bookingService.getHistoryPerRoom(roomId);
+    }
+
+    @GetMapping("/room/available")
+    public ArrayList getAvailableByType(@RequestBody AvailableDTO availableDTO){
+        //try {
+            Types type = Types.valueOf(availableDTO.getType().toUpperCase());
+            Date initDate = availableDTO.getInitDate();
+            Date endDate = availableDTO.getEndDate();
+            return  bookingService.getAvailableByType(type, initDate, endDate);
+        //}catch (Exception err){
+         //   System.out.println("Err: "+err);
+
+        //}
     }
 }
