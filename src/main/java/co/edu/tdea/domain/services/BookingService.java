@@ -9,4 +9,5 @@ public interface BookingService {
 
     Completable createRoom(RoomDTO roomDTO) throws IllegalArgumentException;
     Single<Booking> bookRoom(Booking booking);
+    Completable deleteBooking(String code);
 }

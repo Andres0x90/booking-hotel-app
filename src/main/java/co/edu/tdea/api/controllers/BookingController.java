@@ -9,10 +9,7 @@ import io.reactivex.rxjava3.core.Single;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Getter
@@ -50,6 +47,11 @@ public class BookingController {
     @PostMapping("/book-room")
     public Single<Booking> createBooking(@RequestBody Booking booking){
         return bookingService.bookRoom(booking);
+    }
+
+    @DeleteMapping("/book-room/{code}")
+    public Completable deleteBooking(@PathVariable String code){
+        return bookingService.deleteBooking(code);
     }
 
 }
