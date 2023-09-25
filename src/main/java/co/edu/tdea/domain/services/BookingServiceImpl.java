@@ -7,6 +7,7 @@ import co.edu.tdea.infrastructure.data.FineData;
 import co.edu.tdea.infrastructure.repositories.BookingRepository;
 import co.edu.tdea.infrastructure.repositories.RoomRepository;
 import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import lombok.Getter;
@@ -81,5 +82,11 @@ public class BookingServiceImpl implements BookingService {
                     bookingRepository.deleteById(code);
                     return bookingData;
                 }).flatMapCompletable(bookingData -> Completable.complete());
+    }
+
+    @Override
+    public Flowable<Booking> getHistoryPerRoom(String roomId) {
+        return Flowable.fromIterable(bookingRepository.findByRoomId(roomId))
+                .map(mapper::toEntity);
     }
 }

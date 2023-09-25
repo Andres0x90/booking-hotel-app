@@ -5,6 +5,7 @@ import co.edu.tdea.domain.models.Booking;
 import co.edu.tdea.domain.models.Types;
 import co.edu.tdea.domain.services.BookingService;
 import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,4 +55,8 @@ public class BookingController {
         return bookingService.deleteBooking(code);
     }
 
+    @GetMapping("/room/history/{roomId}")
+    public Flowable<Booking> getHistory(@PathVariable String roomId){
+        return bookingService.getHistoryPerRoom(roomId);
+    }
 }
