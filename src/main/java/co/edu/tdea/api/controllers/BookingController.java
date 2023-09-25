@@ -56,7 +56,7 @@ public class BookingController {
     }
 
     @GetMapping("/room/history/{roomId}")
-    public Flowable<Booking> getHistory(@PathVariable String roomId){
+    public Flowable<Booking> getHistory(@PathVariable Integer roomId){
         return bookingService.getHistoryPerRoom(roomId);
     }
 }

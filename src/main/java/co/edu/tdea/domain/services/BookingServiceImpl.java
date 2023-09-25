@@ -85,8 +85,8 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Flowable<Booking> getHistoryPerRoom(String roomId) {
-        return Flowable.fromIterable(bookingRepository.findByRoomId(roomId))
+    public Flowable<Booking> getHistoryPerRoom(Integer roomId) {
+        return Flowable.fromIterable(bookingRepository.findAllByRoomId(roomId))
                 .map(mapper::toEntity);
     }
 }
