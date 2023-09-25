@@ -2,18 +2,23 @@ package co.edu.tdea.domain.services;
 
 import co.edu.tdea.domain.dto.Mapper;
 import co.edu.tdea.domain.dto.RoomDTO;
-import co.edu.tdea.domain.models.Booking;
-import co.edu.tdea.domain.models.Room;
-import co.edu.tdea.domain.models.Types;
+import co.edu.tdea.domain.models.*;
+import co.edu.tdea.infrastructure.data.FineData;
 import co.edu.tdea.infrastructure.repositories.BookingRepository;
 import co.edu.tdea.infrastructure.repositories.RoomRepository;
 import io.reactivex.rxjava3.core.Completable;
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 
 @Getter
 @Setter
@@ -56,6 +61,32 @@ public class BookingServiceImpl implements BookingService {
                 })
                 .map(mapper::toData)
                 .map(bookingRepository::save)
+                .map(mapper::toEntity);
+    }
+
+    @Override
+    public Completable deleteBooking(String code) {
+        return Single.just(bookingRepository.findById(code)
+                .orElseThrow(() -> new RuntimeException("That booking doesnt exist")))
+                .map(bookingData -> {
+                    long days = ChronoUnit.DAYS.between(LocalDate.now(),
+                            bookingData.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+                    if (days <= 5) {
+                        bookingData.getClient().getFines()
+                                .add(FineData.builder()
+                                        .fee(bookingData.getFee().multiply(BigDecimal.valueOf( 0.05)))
+                                        .build());
+
+                        bookingRepository.save(bookingData);
+                    }
+                    bookingRepository.deleteById(code);
+                    return bookingData;
+                }).flatMapCompletable(bookingData -> Completable.complete());
+    }
+
+    @Override
+    public Flowable<Booking> getHistoryPerRoom(String roomId) {
+        return Flowable.fromIterable(bookingRepository.findByRoomId(roomId))
                 .map(mapper::toEntity);
     }
 }

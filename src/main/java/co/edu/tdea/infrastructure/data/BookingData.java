@@ -21,10 +21,10 @@ public class BookingData {
     private String code;
     private Date startDate;
     private Date endDate;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "room_id")
     private Room room;
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "document")
     private ClientData client;
     private BigDecimal fee;
