@@ -34,23 +34,6 @@ public class BookingController {
     @PostMapping("/createRoom")
     public Completable createRoom(@RequestBody RoomDTO roomDTO){
         return bookingService.createRoom(roomDTO);
-
-        /*try{
-            if(!Types.exist(roomDTO.getType())){
-                return new ResponseEntity<>("Error: type doesn't exist or has a mistype error", HttpStatus.CONFLICT);
-            }
-            Completable res = bookingService.bookRoom(roomDTO);
-
-            //if(res.status == 500){
-
-            }
-        }catch (Exception e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.BAD_REQUEST);
-        }*/
-
-
-        //return new ResponseEntity<>("Room created successfully", HttpStatus.CREATED);
-
     }
 
     @PostMapping("/book-room")

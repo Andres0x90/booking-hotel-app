@@ -55,7 +55,8 @@ public class BookingServiceImplTest extends TestCase {
 
     @Test
     public void testBookRoom() {
-        bookingService.setMapper(mapper);
+        Mapper customMapper = new Mapper();
+        bookingService.setMapper(customMapper);
         Mockito.when(roomRepository.findById(1)).thenReturn(Optional.of(new Room(1, Types.EXECUTIVE)));
         Mockito.when(bookingRepository.save(Mockito.any())).thenReturn(BookingData.builder()
                 .client(ClientData.builder().document("123").fines(List.of()).build())
