@@ -3,6 +3,7 @@ package co.edu.tdea.domain.services;
 import co.edu.tdea.domain.dto.Mapper;
 import co.edu.tdea.domain.dto.RoomDTO;
 import co.edu.tdea.domain.models.*;
+import co.edu.tdea.infrastructure.data.BookingData;
 import co.edu.tdea.infrastructure.data.FineData;
 import co.edu.tdea.infrastructure.repositories.BookingRepository;
 import co.edu.tdea.infrastructure.repositories.RoomRepository;
@@ -18,6 +19,8 @@ import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -84,42 +87,31 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Flowable<Booking> getHistoryPerRoom(String roomId) {
-        return Flowable.fromIterable(bookingRepository.findByRoomId(roomId))
+    public Flowable<Booking> getHistoryPerRoom(Integer roomId) {
+        return Flowable.fromIterable(bookingRepository.findAllByRoomId(roomId))
                 .map(mapper::toEntity);
     }
 
     @Override
-    public  ArrayList getAvailableByType(Types type, Date initDate, Date endDate){
-        ArrayList available = new ArrayList();
-        int pos = -1;
-        if(type.name().equalsIgnoreCase("EXECUTIVE")){
-            pos = 0;
-        }
-        if(type.name().equalsIgnoreCase("SUITE")){
-            pos = 1;
-        }
-        if(type.name().equalsIgnoreCase("SIMPLE")){
-            pos = 2;
-        }
-        Observable.just(bookingRepository.findAvailable(pos))
-                .map(booked -> {
-
-                    System.out.println("HERE:"+booked.toString());
-                    booked.forEach(ele ->{
-                        System.out.println(ele.getStartDate().toString()+"-"+ele.getEndDate().toString() );
-
-                        if(new Date().after(ele.getEndDate())){
-                            available.add(ele.getRoom());
-                        }
-                    });
-                    return "ok";
-                })
-                .flatMapCompletable(booked -> Completable.complete());
-
-        return available;
+    public  Flowable<RoomDTO> getAvailableByType(String type){
+         return Flowable.fromIterable(bookingRepository.findAllByRoomType(Types.valueOf(type)))
+                .filter(bookingData -> bookingData.getEndDate().after(new Date()))
+                .map(BookingData::getRoom)
+                .collect(Collectors.toList())
+                .zipWith(Single.just(roomRepository.findAllByType(Types.valueOf(type))), (busyRooms, allRooms) -> {
+                    return allRooms.stream()
+                            .filter(room -> !busyRooms
+                                    .stream()
+                                    .map(Room::getId)
+                                    .toList()
+                                    .contains(room.getId()))
+                            .toList();
+                }).flatMapPublisher(Flowable::fromIterable)
+                 .map(room -> RoomDTO.builder()
+                         .id(room.getId())
+                         .type(room.getType().name())
+                         .build());
 
     }
-
 
 }

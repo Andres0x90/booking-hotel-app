@@ -64,20 +64,12 @@ public class BookingController {
     }
 
     @GetMapping("/room/history/{roomId}")
-    public Flowable<Booking> getHistory(@PathVariable String roomId){
+    public Flowable<Booking> getHistory(@PathVariable Integer roomId){
         return bookingService.getHistoryPerRoom(roomId);
     }
 
-    @GetMapping("/room/available")
-    public ArrayList getAvailableByType(@RequestBody AvailableDTO availableDTO){
-        //try {
-            Types type = Types.valueOf(availableDTO.getType().toUpperCase());
-            Date initDate = availableDTO.getInitDate();
-            Date endDate = availableDTO.getEndDate();
-            return  bookingService.getAvailableByType(type, initDate, endDate);
-        //}catch (Exception err){
-         //   System.out.println("Err: "+err);
-
-        //}
+    @GetMapping("/room/available/{type}")
+    public Flowable<RoomDTO> getAvailableByType(@PathVariable String type){
+        return  bookingService.getAvailableByType(type);
     }
 }

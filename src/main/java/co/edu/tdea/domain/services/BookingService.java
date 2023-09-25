@@ -16,7 +16,6 @@ public interface BookingService {
     Completable createRoom(RoomDTO roomDTO) throws IllegalArgumentException;
     Single<Booking> bookRoom(Booking booking);
     Completable deleteBooking(String code);
-    Flowable<Booking> getHistoryPerRoom(String roomId);
-
-    ArrayList getAvailableByType(Types type, Date initDate, Date endDate);
+    Flowable<Booking> getHistoryPerRoom(Integer roomId);
+    Flowable<RoomDTO> getAvailableByType(String type);
 }
